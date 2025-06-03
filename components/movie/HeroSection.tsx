@@ -19,7 +19,7 @@ const HeroSection = () => {
   const [currentMovie, setCurrentMovie] = useState(mockMovie);
 
   return (
-    <section className="relative h-[85vh] overflow-hidden">
+    <section className="relative h-[85vh] 2xl:h-[70vh] overflow-hidden">
       <div className="absolute">
         <img
           src={currentMovie.backdrop_path}
@@ -28,11 +28,9 @@ const HeroSection = () => {
         />
       </div>
 
-      {/* Content */}
       <div className="relative z-10 h-full flex items-center">
         <div className="container mx-auto px-6 lg:px-8">
           <div className="max-w-2xl">
-            {/* Status Badge */}
             <div className="">
               <p className="font-normal text-white text-base">
                 {currentMovie.status}:

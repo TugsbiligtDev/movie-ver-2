@@ -10,8 +10,8 @@ export default function Home() {
         <HeroSection />
         <div className="container mx-auto px-4 py-8">
           <MovieUpcoming />
-          <MoviePopular text="Popular" />
-          <MovieTopRated text="Top rated" />
+          <MoviePopular />
+          <MovieTopRated />
         </div>
       </main>
     </div>

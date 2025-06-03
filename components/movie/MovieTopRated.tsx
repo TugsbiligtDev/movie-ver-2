@@ -2,34 +2,71 @@
 import { useEffect, useState } from "react";
 import MovieCard from "./MovieCard";
 import { Button } from "../ui/button";
+import { Skeleton } from "../ui/skeleton";
 import { ChevronRight } from "lucide-react";
 import { Movie } from "@/lib/types";
+import Link from "next/link";
 
-const MovieTopRated = ({ text }: { text: string }) => {
+const MovieTopRated = () => {
   const [movieData, setMovieData] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const TMDB_BASE_URL =
-    process.env.TMDB_BASE_URL || "https://api.themoviedb.org/3";
-  const TMDB_IMAGE_BASE_URL =
-    process.env.TMDB_IMAGE_BASE_URL || "https://image.tmdb.org/t/p/w500";
-  const TMDB_ACCESS_TOKEN = process.env.TMDB_ACCESS_TOKEN;
+  const TMDB_BASE_URL = "https://api.themoviedb.org/3";
+  const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
+  const TMDB_ACCESS_TOKEN =
+    "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiYmYxOGE1NWI2MGMxYWM4YWI3M2Q4NzVjZTExMjYxNiIsIm5iZiI6MTc0ODc2MTMyNC41OTcsInN1YiI6IjY4M2JmYWVjOWQxNjkzZGUyMzdmM2I5OSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ZZd_2JXGEWZx2ngeTvi-DB-089Is2IWuUBqiG5p6uaY";
+
+  const fetchTopRatedMovies = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `${TMDB_BASE_URL}/movie/top_rated?language=en-US&page=1`,
+        {
+          headers: {
+            Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setMovieData(data.results || []);
+      console.log(data);
+    } catch (err) {
+      console.error("Error fetching top rated movies:", err);
+      setError(err instanceof Error ? err.message : "Failed to fetch movies");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetch(`${TMDB_BASE_URL}/movie/popular?language=en-US&page=1`, {
-      headers: { Authorization: `Bearer ${TMDB_ACCESS_TOKEN}` },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setMovieData(data.results);
-        console.log(data);
-      });
-  }, [TMDB_BASE_URL, TMDB_ACCESS_TOKEN]);
+    fetchTopRatedMovies();
+  }, []);
+
+  if (error) {
+    return (
+      <div>
+        <div className="w-full p-4 text-center text-red-500">
+          Error: {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
       <div className="w-full mb-2">
         <div className="flex justify-between pb-2">
-          <p className="text-xl md:text-2xl font-semibold leading-8">{text}</p>
+          <p className="text-xl md:text-2xl font-semibold leading-8">
+            Top rated
+          </p>
           <Button
             variant="ghost"
             className="flex items-center gap-2 text-[#09090B] "
@@ -39,17 +76,26 @@ const MovieTopRated = ({ text }: { text: string }) => {
           </Button>
         </div>
       </div>
-      <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-8">
-        {movieData?.slice(0, 10).map((movie) => {
-          return (
-            <MovieCard
-              key={movie.id}
-              image={`${TMDB_IMAGE_BASE_URL}${movie.poster_path}`}
-              rating={movie.vote_average.toFixed(1)}
-              title={movie.title}
-            />
-          );
-        })}
+      <div className="relative">
+        <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-8">
+          {loading
+            ? Array.from({ length: 10 }).map((_, index) => (
+                <div key={index} className="w-full">
+                  <Skeleton className="w-full h-[440px]" />
+                </div>
+              ))
+            : movieData?.slice(0, 10).map((movie) => {
+                return (
+                  <Link href={`/movie/${movie.id}`} key={movie.id}>
+                    <MovieCard
+                      image={`${TMDB_IMAGE_BASE_URL}${movie.poster_path}`}
+                      rating={movie.vote_average}
+                      title={movie.title}
+                    />
+                  </Link>
+                );
+              })}
+        </div>
       </div>
     </div>
   );
