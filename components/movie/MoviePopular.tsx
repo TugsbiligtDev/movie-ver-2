@@ -85,7 +85,7 @@ const MovieUpcoming = () => {
               ))
             : movieData?.slice(0, 10).map((movie) => {
                 return (
-                  <Link href={`/movie/${movie.id}`} key={movie.id}>
+                  <Link href={`/movies/${movie.id}`} key={movie.id}>
                     <MovieCard
                       image={`${TMDB_IMAGE_BASE_URL}${movie.poster_path}`}
                       rating={movie.vote_average}

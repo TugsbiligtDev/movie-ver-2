@@ -1,4 +1,4 @@
-const StaffInfo = () => {
+const StaffInfo = ({ name, role }: { name: string; role: string }) => {
   return (
     <div className="w-full">
       <div className="flex text-[#09090B] gap-[53px] text-base pb-1 ">
