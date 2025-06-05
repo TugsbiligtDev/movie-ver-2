@@ -67,13 +67,16 @@ const MovieUpcoming = () => {
           <p className="text-xl md:text-2xl font-semibold leading-8">
             Upcoming
           </p>
-          <Button
-            variant="ghost"
-            className="flex items-center gap-2 text-[#09090B] "
-          >
-            See more
-            <ChevronRight className="w-4 h-4" />
-          </Button>
+
+          <Link href="/upcoming">
+            <Button
+              variant="ghost"
+              className="flex items-center gap-2 text-[#09090B] "
+            >
+              See more
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </Link>
         </div>
       </div>
       <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-8">

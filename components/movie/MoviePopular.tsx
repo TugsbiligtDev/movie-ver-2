@@ -6,11 +6,20 @@ import { Skeleton } from "../ui/skeleton";
 import { ChevronRight } from "lucide-react";
 import { Movie } from "@/lib/types";
 import Link from "next/link";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { Card, CardContent } from "@/components/ui/card";
 
-const MovieUpcoming = () => {
+const MoviePopular = () => {
   const [movieData, setMovieData] = useState<Movie[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  //  /genre/movie/list?language=en
 
   const TMDB_BASE_URL = "https://api.themoviedb.org/3";
   const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
@@ -65,13 +74,15 @@ const MovieUpcoming = () => {
       <div className="w-full mb-2">
         <div className="flex justify-between pb-2">
           <p className="text-xl md:text-2xl font-semibold leading-8">Popular</p>
-          <Button
-            variant="ghost"
-            className="flex items-center gap-2 text-[#09090B] "
-          >
-            See more
-            <ChevronRight className="w-4 h-4" />
-          </Button>
+          <Link href="popular">
+            <Button
+              variant="ghost"
+              className="flex items-center gap-2 text-[#09090B] "
+            >
+              See more
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </Link>
         </div>
       </div>
       <div className="relative">
@@ -100,4 +111,4 @@ const MovieUpcoming = () => {
   );
 };
 
-export default MovieUpcoming;
+export default MoviePopular;

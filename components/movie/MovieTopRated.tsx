@@ -67,13 +67,15 @@ const MovieTopRated = () => {
           <p className="text-xl md:text-2xl font-semibold leading-8">
             Top rated
           </p>
-          <Button
-            variant="ghost"
-            className="flex items-center gap-2 text-[#09090B] "
-          >
-            See more
-            <ChevronRight className="w-4 h-4" />
-          </Button>
+          <Link href="/top">
+            <Button
+              variant="ghost"
+              className="flex items-center gap-2 text-[#09090B] "
+            >
+              See more
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </Link>
         </div>
       </div>
       <div className="relative">
