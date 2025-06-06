@@ -32,7 +32,7 @@ const MoviePopular = () => {
 
     try {
       const response = await fetch(
-        `${TMDB_BASE_URL}/movie/popular?language=en-US&page=1`,
+        `${TMDB_BASE_URL}/movie/popular?language=en-US&page=3`,
         {
           headers: {
             Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
