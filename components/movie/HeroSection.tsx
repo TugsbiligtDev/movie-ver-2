@@ -1,22 +1,85 @@
 "use client";
 
-import { useState } from "react";
-import { Play, Star, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Play, Star, ChevronRight, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const mockMovie = {
-  id: 1,
-  title: "Spider-Man: No Way Home",
-  overview:
-    "Peter Parker is unmasked and no longer able to separate his normal life from the high-stakes of being a super-hero. When he asks for help from Doctor Strange the stakes become even more dangerous, forcing him to discover what it truly means to be Spider-Man.",
-  backdrop_path:
-    "https://image.tmdb.org/t/p/original/iQFcwSGbZXMkeyKrxbPnwnRo5fl.jpg",
-  vote_average: 8.4,
-  status: "Now Playing",
-};
+const TMDB_BASE_URL = "https://api.themoviedb.org/3";
+const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/original";
+const TMDB_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiYmYxOGE1NWI2MGMxYWM4YWI3M2Q4NzVjZTExMjYxNiIsIm5iZiI6MTc0ODc2MTMyNC41OTcsInN1YiI6IjY4M2JmYWVjOWQxNjkzZGUyMzdmM2I5OSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ZZd_2JXGEWZx2ngeTvi-DB-089Is2IWuUBqiG5p6uaY";
+
+interface Movie {
+  id: number;
+  title: string;
+  overview: string;
+  backdrop_path: string;
+  vote_average: number;
+  status: string;
+}
 
 const HeroSection = () => {
-  const [currentMovie, setCurrentMovie] = useState(mockMovie);
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchMovies = async () => {
+    try {
+      const response = await fetch(
+        `${TMDB_BASE_URL}/movie/popular?language=en-US&page=1`,
+        {
+          headers: {
+            Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        const formattedMovies = data.results.slice(0, 6).map((movie: any) => ({
+          id: movie.id,
+          title: movie.title,
+          overview: movie.overview,
+          backdrop_path: `${TMDB_IMAGE_BASE_URL}${movie.backdrop_path}`,
+          vote_average: movie.vote_average,
+          status: "Now Playing",
+        }));
+        setMovies(formattedMovies);
+      }
+    } catch (error) {
+      console.error("Error fetching movies:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMovies();
+  }, []);
+
+
+
+  const goToNext = () => {
+    setCurrentIndex((prevIndex) => 
+      prevIndex === movies.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const goToPrevious = () => {
+    setCurrentIndex((prevIndex) => 
+      prevIndex === 0 ? movies.length - 1 : prevIndex - 1
+    );
+  };
+
+  if (isLoading || movies.length === 0) {
+    return (
+      <section className="relative h-[85vh] 2xl:h-[70vh] overflow-hidden bg-gray-900 flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </section>
+    );
+  }
+
+  const currentMovie = movies[currentIndex];
 
   return (
     <section className="relative h-[85vh] 2xl:h-[70vh] overflow-hidden">
@@ -63,12 +126,22 @@ const HeroSection = () => {
           </div>
         </div>
 
-        {/* Navigation Arrow */}
-        <button className="absolute size-10 right-8 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 flex items-center justify-center cursor-pointer">
+        <button 
+          onClick={goToPrevious}
+          className="absolute size-10 left-8 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 flex items-center justify-center cursor-pointer"
+        >
+          <ChevronLeft className="w-5 h-5 text-[#09090B]" />
+        </button>
+
+        <button 
+          onClick={goToNext}
+          className="absolute size-10 right-8 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 flex items-center justify-center cursor-pointer"
+        >
           <ChevronRight className="w-5 h-5 text-[#09090B]" />
         </button>
       </div>
     </section>
   );
 };
+
 export default HeroSection;
