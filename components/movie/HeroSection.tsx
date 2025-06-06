@@ -94,7 +94,7 @@ const HeroSection = () => {
       <div className="relative z-10 h-full flex items-center">
         <div className="container mx-auto px-6 lg:px-8">
           <div className="max-w-2xl">
-            <div className="">
+            <div>
               <p className="font-normal text-white text-base">
                 {currentMovie.status}:
               </p>
