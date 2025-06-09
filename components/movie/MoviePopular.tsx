@@ -19,7 +19,6 @@ const MoviePopular = () => {
   const [movieData, setMovieData] = useState<Movie[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  //  /genre/movie/list?language=en
 
   const TMDB_BASE_URL = "https://api.themoviedb.org/3";
   const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";

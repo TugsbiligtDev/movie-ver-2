@@ -3,6 +3,15 @@ import React, { useState } from 'react';
 import { Film, Search, ChevronDown, Moon } from "lucide-react";
 import SearchBox from '../common/SearchBox';
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 const Header = () => {
   const [isGenreDropdownOpen, setIsGenreDropdownOpen] = useState(false);
 
@@ -34,7 +43,7 @@ const Header = () => {
           </div>
 
           <div className="hidden md:flex gap-3 items-center">
-            <div className="relative">
+            {/* <div className="relative">
               <button
                 onClick={toggleGenreDropdown}
                 className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors"
@@ -64,7 +73,10 @@ const Header = () => {
                   </div>
                 </div>
               )}
-            </div>
+            </div> */}
+            <DropdownMenu>
+              
+            </DropdownMenu>
 
             <div className="relative w-64 lg:w-80">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
