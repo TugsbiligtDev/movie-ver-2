@@ -60,7 +60,7 @@ export default function MovieDetailClient({
                     </span>
                   </p>
                   <p className="text-[#71717A] dark:text-gray-400 text-base font-normal">
-                    37k
+                    {movie.vote_count?.toLocaleString() || "N/A"}
                   </p>
                 </div>
               </div>

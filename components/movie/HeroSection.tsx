@@ -56,7 +56,6 @@ const HeroSection = () => {
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch movies");
-      console.error("Error fetching movies:", err);
     } finally {
       setIsLoading(false);
     }

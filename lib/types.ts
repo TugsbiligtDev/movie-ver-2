@@ -6,6 +6,7 @@ export interface Movie {
   backdrop_path: string | null;
   release_date: string;
   vote_average: number;
+  vote_count?: number;
   genre_ids: number[];
   adult: boolean;
   runtime?: number;
@@ -34,10 +35,6 @@ export interface TMDBResponse {
   page: number;
   total_pages: number;
   total_results: number;
-}
-
-export interface GenreResponse {
-  genres: Genre[];
 }
 
 export interface SearchResult {

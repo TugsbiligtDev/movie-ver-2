@@ -14,7 +14,7 @@ const MoviePopular = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUpcomingMovies = async () => {
+    const fetchPopularMovies = async () => {
       setLoading(true);
       setError(null);
 
@@ -28,7 +28,7 @@ const MoviePopular = () => {
       }
     };
 
-    fetchUpcomingMovies();
+    fetchPopularMovies();
   }, []);
 
   if (error) {
@@ -48,7 +48,7 @@ const MoviePopular = () => {
           <p className="text-xl md:text-2xl font-semibold leading-8 text-gray-900 dark:text-white">
             Popular
           </p>
-          <Link href="popular">
+          <Link href="/popular">
             <Button
               variant="ghost"
               className="flex items-center gap-2 text-[#09090B] dark:text-white"

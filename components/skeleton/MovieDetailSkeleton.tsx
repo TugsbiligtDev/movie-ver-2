@@ -1,6 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import MovieCardSkeleton from "@/components/skeleton/MovieCardSkeleton";
-import React from "react";
 
 const MovieDetailSkeleton = () => {
   return (

@@ -66,18 +66,13 @@ export async function getMoviesByGenre(genreId: number, page = 1) {
   return fetchData(url);
 }
 
-export async function getGenres() {
-  const url = `${BASE_URL}/genre/movie/list`;
-  return fetchData(url);
-}
-
 export async function getMovieVideos(movieId: string) {
   const url = `${BASE_URL}/movie/${movieId}/videos?language=en-US`;
   return fetchData(url);
 }
 
 export function getImageUrl(path: string | null, size = "w500") {
-  if (!path) return "/placeholder-movie.jpg";
+  if (!path) return "/movie.png";
   return `${IMAGE_BASE_URL}/${size}${path}`;
 }
 

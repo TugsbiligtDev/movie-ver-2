@@ -46,7 +46,6 @@ async function MovieDetailContent({
       />
     );
   } catch (error) {
-    console.error("Error fetching movie data:", error);
     return (
       <section className="flex justify-center items-center min-h-[50vh]">
         <div className="text-center">
