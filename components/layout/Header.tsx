@@ -8,6 +8,15 @@ import { useTheme } from "@/components/providers/ThemeProvider";
 import { Genre } from "@/lib/types";
 import { getGenres } from "@/lib/api";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 const Header = () => {
   const [isGenreDropdownOpen, setIsGenreDropdownOpen] = useState(false);
   const [fetchedGenres, setFetchedGenres] = useState<Genre[]>([]);
@@ -50,7 +59,7 @@ const Header = () => {
           </Link>
 
           <div className="hidden md:flex gap-3 items-center">
-            <div className="relative">
+            {/* <div className="relative">
               <button
                 onClick={toggleGenreDropdown}
                 className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-gray-900 dark:text-white"
@@ -85,7 +94,10 @@ const Header = () => {
                   </div>
                 </div>
               )}
-            </div>
+            </div> */}
+            <DropdownMenu>
+              
+            </DropdownMenu>
 
             <div className="relative w-64 lg:w-80">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
