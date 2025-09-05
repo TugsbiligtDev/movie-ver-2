@@ -8,11 +8,49 @@ export interface Movie {
   vote_average: number;
   genre_ids: number[];
   adult: boolean;
-  original_language: string;
-  original_title: string;
+  runtime?: number;
+  genres?: Array<{ id: number; name: string }>;
 }
-export interface Card {
-  image: string;
-  rating: number;
+
+export interface CastMember {
+  id: number;
+  name: string;
+  character?: string;
+  job?: string;
+}
+
+export interface CreditsData {
+  cast: CastMember[];
+  crew: CastMember[];
+}
+
+export interface Genre {
+  id: number;
+  name: string;
+}
+
+export interface TMDBResponse {
+  results: Movie[];
+  page: number;
+  total_pages: number;
+  total_results: number;
+}
+
+export interface GenreResponse {
+  genres: Genre[];
+}
+
+export interface SearchResult {
+  id: number;
   title: string;
+  release_date: string;
+  poster_path: string | null;
+  vote_average: number;
+}
+
+export type Theme = "light" | "dark";
+
+export interface ThemeContextType {
+  theme: Theme;
+  toggleTheme: () => void;
 }

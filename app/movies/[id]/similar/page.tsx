@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getPopularMovies } from "@/lib/api";
+import { getSimilarMovies, getMovieDetails } from "@/lib/api";
 import MovieCard from "@/components/movie/MovieCard";
 import { Movie } from "@/lib/types";
 import {
@@ -12,17 +12,24 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-export default async function PopularPage({
+export default async function SimilarMoviesPage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ id: string }>;
   searchParams: Promise<{ page?: string }>;
 }) {
+  const { id } = await params;
   const { page: rawPage } = await searchParams;
   const currentPage = parseInt(rawPage || "1", 10);
   const page = Math.max(1, Math.min(currentPage, 500));
 
   try {
-    const data = await getPopularMovies(page);
+    const [movie, data] = await Promise.all([
+      getMovieDetails(id),
+      getSimilarMovies(id, page),
+    ]);
+
     const results = data.results || [];
     const totalPages = Math.min(data.total_pages || 1, 500);
     const totalResults = data.total_results || 0;
@@ -31,7 +38,7 @@ export default async function PopularPage({
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Popular Movies
+            Movies similar to {movie.title}
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Showing {results.length} of {totalResults.toLocaleString()} movies
@@ -41,7 +48,7 @@ export default async function PopularPage({
         {results.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-600 dark:text-gray-400 text-lg">
-              No popular movies found.
+              No similar movies found.
             </p>
           </div>
         ) : (
@@ -60,7 +67,9 @@ export default async function PopularPage({
               <PaginationContent>
                 {page > 1 && (
                   <PaginationItem>
-                    <PaginationPrevious href={`/popular?page=${page - 1}`} />
+                    <PaginationPrevious
+                      href={`/movies/${id}/similar?page=${page - 1}`}
+                    />
                   </PaginationItem>
                 )}
 
@@ -69,7 +78,7 @@ export default async function PopularPage({
                   return (
                     <PaginationItem key={pageNum}>
                       <PaginationLink
-                        href={`/popular?page=${pageNum}`}
+                        href={`/movies/${id}/similar?page=${pageNum}`}
                         isActive={pageNum === page}
                       >
                         {pageNum}
@@ -86,7 +95,9 @@ export default async function PopularPage({
 
                 {totalPages > 5 && page < totalPages - 2 && (
                   <PaginationItem>
-                    <PaginationLink href={`/popular?page=${totalPages}`}>
+                    <PaginationLink
+                      href={`/movies/${id}/similar?page=${totalPages}`}
+                    >
                       {totalPages}
                     </PaginationLink>
                   </PaginationItem>
@@ -94,7 +105,9 @@ export default async function PopularPage({
 
                 {page < totalPages && (
                   <PaginationItem>
-                    <PaginationNext href={`/popular?page=${page + 1}`} />
+                    <PaginationNext
+                      href={`/movies/${id}/similar?page=${page + 1}`}
+                    />
                   </PaginationItem>
                 )}
               </PaginationContent>
@@ -108,17 +121,17 @@ export default async function PopularPage({
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Error Loading Movies
+            Error Loading Similar Movies
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            There was an error loading popular movies:{" "}
+            There was an error loading similar movies:{" "}
             {error instanceof Error ? error.message : "Unknown error"}
           </p>
           <Link
-            href="/"
+            href={`/movies/${id}`}
             className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
           >
-            Return to Home
+            Return to Movie
           </Link>
         </div>
       </div>

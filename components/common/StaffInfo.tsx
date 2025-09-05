@@ -1,32 +1,31 @@
 import { Separator } from "@/components/ui/separator";
-const StaffInfo = ({
-  job,
-  role,
-  castdata,
-  type = "crew",
-}: {
+import { CastMember, CreditsData } from "@/lib/types";
+
+interface StaffInfoProps {
   job?: string;
   role: string;
-  castdata: any;
+  castdata: CreditsData;
   type?: "crew" | "cast";
-}) => {
-  let staff;
+}
+
+const StaffInfo = ({ job, role, castdata, type = "crew" }: StaffInfoProps) => {
+  let staff: CastMember[] | undefined;
 
   if (type === "cast") {
     staff = castdata?.cast?.slice(0, 3);
   } else {
-    staff = castdata?.crew?.filter((person: any) => person.job === job);
+    staff = castdata?.crew?.filter((person: CastMember) => person.job === job);
   }
 
   return (
     <div className="w-full">
-      <div className="flex text-[#09090B] gap-[53px] text-base pb-1">
+      <div className="flex text-[#09090B] dark:text-white gap-[53px] text-base pb-1">
         <h3 className="font-bold">{role}</h3>
-        <p className="font-normal">
-          {staff?.map((person: any, index: number) => (
-            <span key={index}>
+        <p className="font-normal text-gray-600 dark:text-gray-300">
+          {staff?.map((person: CastMember, index: number) => (
+            <span key={person.id || index}>
               {person.name}
-              {index < staff.length - 1 && " · "}
+              {index < (staff?.length || 0) - 1 && " · "}
             </span>
           ))}
         </p>

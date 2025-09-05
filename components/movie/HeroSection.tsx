@@ -3,51 +3,60 @@
 import { useState, useEffect } from "react";
 import { Play, Star, ChevronRight, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import HeroSkeleton from "@/components/skeleton/HeroSkeleton";
+import { getPopularMovies, getBackdropUrl, getMovieVideos } from "@/lib/api";
+import { Movie } from "@/lib/types";
+import TrailerModal from "./TrailerModal";
 
-const TMDB_BASE_URL = "https://api.themoviedb.org/3";
-const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/original";
-const TMDB_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiYmYxOGE1NWI2MGMxYWM4YWI3M2Q4NzVjZTExMjYxNiIsIm5iZiI6MTc0ODc2MTMyNC41OTcsInN1YiI6IjY4M2JmYWVjOWQxNjkzZGUyMzdmM2I5OSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ZZd_2JXGEWZx2ngeTvi-DB-089Is2IWuUBqiG5p6uaY";
-
-interface Movie {
-  id: number;
-  title: string;
-  overview: string;
+interface HeroMovie extends Movie {
   backdrop_path: string;
-  vote_average: number;
   status: string;
+  trailer?: { key: string; type: string; site: string };
 }
 
 const HeroSection = () => {
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const [movies, setMovies] = useState<HeroMovie[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isTrailerOpen, setIsTrailerOpen] = useState(false);
 
   const fetchMovies = async () => {
     try {
-      const response = await fetch(
-        `${TMDB_BASE_URL}/movie/popular?language=en-US&page=1`,
-        {
-          headers: {
-            Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
-            "Content-Type": "application/json",
-          },
-        }
+      const data = await getPopularMovies(1);
+      const moviesToProcess = data.results.slice(0, 5);
+
+      const moviesWithTrailers = await Promise.all(
+        moviesToProcess.map(async (movie: Movie) => {
+          try {
+            const videos = await getMovieVideos(movie.id.toString());
+            const trailer = videos.results?.find(
+              (video: { type: string; site: string }) =>
+                video.type === "Trailer" && video.site === "YouTube"
+            );
+
+            return {
+              ...movie,
+              backdrop_path: getBackdropUrl(movie.backdrop_path),
+              status: "Now Playing",
+              trailer: trailer || undefined,
+            };
+          } catch {
+            return {
+              ...movie,
+              backdrop_path: getBackdropUrl(movie.backdrop_path),
+              status: "Now Playing",
+            };
+          }
+        })
       );
-      
-      if (response.ok) {
-        const data = await response.json();
-        const formattedMovies = data.results.slice(0, 6).map((movie: any) => ({
-          id: movie.id,
-          title: movie.title,
-          overview: movie.overview,
-          backdrop_path: `${TMDB_IMAGE_BASE_URL}${movie.backdrop_path}`,
-          vote_average: movie.vote_average,
-          status: "Now Playing",
-        }));
-        setMovies(formattedMovies);
-      }
-    } catch (error) {
-      console.error("Error fetching movies:", error);
+
+      setMovies(moviesWithTrailers);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch movies");
+      console.error("Error fetching movies:", err);
     } finally {
       setIsLoading(false);
     }
@@ -57,24 +66,41 @@ const HeroSection = () => {
     fetchMovies();
   }, []);
 
-
-
   const goToNext = () => {
-    setCurrentIndex((prevIndex) => 
+    setCurrentIndex((prevIndex) =>
       prevIndex === movies.length - 1 ? 0 : prevIndex + 1
     );
   };
 
   const goToPrevious = () => {
-    setCurrentIndex((prevIndex) => 
+    setCurrentIndex((prevIndex) =>
       prevIndex === 0 ? movies.length - 1 : prevIndex - 1
     );
   };
 
-  if (isLoading || movies.length === 0) {
+  const handleTrailerClick = () => {
+    setIsTrailerOpen(true);
+  };
+
+  if (isLoading) {
+    return <HeroSkeleton />;
+  }
+
+  if (error) {
     return (
       <section className="relative h-[85vh] 2xl:h-[70vh] overflow-hidden bg-gray-900 flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
+        <div className="text-center">
+          <div className="text-red-400 text-xl mb-4">Error Loading Movies</div>
+          <div className="text-gray-300 text-sm">{error}</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (movies.length === 0) {
+    return (
+      <section className="relative h-[85vh] 2xl:h-[70vh] overflow-hidden bg-gray-900 flex items-center justify-center">
+        <div className="text-white text-xl">No movies available</div>
       </section>
     );
   }
@@ -83,63 +109,75 @@ const HeroSection = () => {
 
   return (
     <section className="relative h-[85vh] 2xl:h-[70vh] overflow-hidden">
-      <div className="absolute">
-        <img
+      <div className="absolute inset-0">
+        <Image
           src={currentMovie.backdrop_path}
           alt={currentMovie.title}
-          className="w-full h-full object-cover object-center"
+          fill
+          className="object-cover object-center"
+          priority
         />
       </div>
 
       <div className="relative z-10 h-full flex items-center">
-        <div className="container mx-auto px-6 lg:px-8">
-          <div className="max-w-2xl">
-            <div>
-              <p className="font-normal text-white text-base">
-                {currentMovie.status}:
-              </p>
-            </div>
-
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
-              {currentMovie.title}
-            </h1>
-
-            <div className="flex items-center gap-2">
-              <Star className="w-7 h-7 fill-[#FDE047] text-[#FDE047]" />
-              <span className="text-white text-lg font-semibold">
-                {currentMovie.vote_average.toFixed(1)}
-              </span>
-              <span className="text-[#71717A] text-base font-normal">/10</span>
-            </div>
-
-            <p className="text-[#FAFAFA] text-xs max-w-lg">
-              {currentMovie.overview}
+        <div className="w-full max-w-2xl ml-16 md:ml-20 lg:ml-24">
+          <div>
+            <p className="font-normal text-white text-base">
+              {currentMovie.status}:
             </p>
+          </div>
 
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
+            {currentMovie.title}
+          </h1>
+
+          <div className="flex items-center gap-2">
+            <Star className="w-7 h-7 fill-[#FDE047] text-[#FDE047]" />
+            <span className="text-white text-lg font-semibold">
+              {currentMovie.vote_average.toFixed(1)}
+            </span>
+            <span className="text-[#71717A] text-base font-normal">/10</span>
+          </div>
+
+          <p className="text-[#FAFAFA] text-xs max-w-lg">
+            {currentMovie.overview}
+          </p>
+
+          {currentMovie.trailer && (
             <Button
               variant={"secondary"}
-              className="text-[#18181B] px-4 py-2 text-base font-semibold rounded-md"
+              className="bg-white/90 hover:bg-white text-[#18181B] px-4 py-2 text-base font-semibold rounded-md"
+              onClick={handleTrailerClick}
             >
               <Play className="w-4 h-4 mr-1" />
               Watch Trailer
             </Button>
-          </div>
+          )}
         </div>
 
-        <button 
+        <button
           onClick={goToPrevious}
-          className="absolute size-10 left-8 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 flex items-center justify-center cursor-pointer"
+          className="absolute size-10 left-2 md:left-4 lg:left-8 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 flex items-center justify-center cursor-pointer z-20"
         >
           <ChevronLeft className="w-5 h-5 text-[#09090B]" />
         </button>
 
-        <button 
+        <button
           onClick={goToNext}
-          className="absolute size-10 right-8 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 flex items-center justify-center cursor-pointer"
+          className="absolute size-10 right-2 md:right-4 lg:right-8 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 flex items-center justify-center cursor-pointer z-20"
         >
           <ChevronRight className="w-5 h-5 text-[#09090B]" />
         </button>
       </div>
+
+      {currentMovie.trailer && (
+        <TrailerModal
+          isOpen={isTrailerOpen}
+          onClose={() => setIsTrailerOpen(false)}
+          trailerKey={currentMovie.trailer.key}
+          movieTitle={currentMovie.title}
+        />
+      )}
     </section>
   );
 };

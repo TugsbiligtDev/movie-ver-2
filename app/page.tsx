@@ -5,7 +5,7 @@ import MovieUpcoming from "@/components/movie/MovieUpcoming";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-black">
       <main className="pb-12">
         <HeroSection />
         <div className="container mx-auto px-4 py-8">
