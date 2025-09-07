@@ -6,14 +6,8 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import HeroSkeleton from "@/components/skeleton/HeroSkeleton";
 import { getPopularMovies, getBackdropUrl, getMovieVideos } from "@/lib/api";
-import { Movie } from "@/lib/types";
+import { Movie, HeroMovie, Trailer } from "@/lib/types";
 import TrailerModal from "./TrailerModal";
-
-interface HeroMovie extends Movie {
-  backdrop_path: string;
-  status: string;
-  trailer?: { key: string; type: string; site: string };
-}
 
 const HeroSection = () => {
   const [movies, setMovies] = useState<HeroMovie[]>([]);
@@ -29,26 +23,20 @@ const HeroSection = () => {
 
       const moviesWithTrailers = await Promise.all(
         moviesToProcess.map(async (movie: Movie) => {
-          try {
-            const videos = await getMovieVideos(movie.id.toString());
-            const trailer = videos.results?.find(
-              (video: { type: string; site: string }) =>
-                video.type === "Trailer" && video.site === "YouTube"
-            );
+          const videos = await getMovieVideos(movie.id.toString()).catch(
+            () => ({ results: [] })
+          );
+          const trailer = videos.results?.find(
+            (video: Trailer) =>
+              video.type === "Trailer" && video.site === "YouTube"
+          );
 
-            return {
-              ...movie,
-              backdrop_path: getBackdropUrl(movie.backdrop_path),
-              status: "Now Playing",
-              trailer: trailer || undefined,
-            };
-          } catch {
-            return {
-              ...movie,
-              backdrop_path: getBackdropUrl(movie.backdrop_path),
-              status: "Now Playing",
-            };
-          }
+          return {
+            ...movie,
+            backdrop_path: getBackdropUrl(movie.backdrop_path),
+            status: "Now Playing",
+            trailer: trailer || undefined,
+          };
         })
       );
 
@@ -86,14 +74,7 @@ const HeroSection = () => {
   }
 
   if (error) {
-    return (
-      <section className="relative h-[85vh] 2xl:h-[70vh] overflow-hidden bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-400 text-xl mb-4">Error Loading Movies</div>
-          <div className="text-gray-300 text-sm">{error}</div>
-        </div>
-      </section>
-    );
+    return <div>{error}</div>;
   }
 
   if (movies.length === 0) {

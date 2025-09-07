@@ -11,13 +11,13 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { getPosterUrl, getBackdropUrl } from "@/lib/api";
-import { Movie, CreditsData, TMDBResponse } from "@/lib/types";
+import { Movie, CreditsData, TMDBResponse, Trailer } from "@/lib/types";
 
 interface MovieDetailClientProps {
   movie: Movie;
   castdata: CreditsData;
   similardata: TMDBResponse;
-  trailer: { key: string; type: string; site: string } | undefined;
+  trailer: Trailer | undefined;
 }
 
 export default function MovieDetailClient({
@@ -67,21 +67,37 @@ export default function MovieDetailClient({
             </div>
           </div>
           <div className="flex gap-8 h-[428px]">
-            <Image
-              src={getPosterUrl(movie.poster_path, "w500")}
-              alt={`${movie.title} poster`}
-              width={290}
-              height={428}
-              className="w-[290px] rounded-sm"
-            />
-            <div className="relative w-full rounded-sm overflow-hidden">
+            {movie.poster_path ? (
               <Image
-                src={getBackdropUrl(movie.backdrop_path, "w500")}
-                alt={`${movie.title} backdrop`}
-                width={500}
+                src={getPosterUrl(movie.poster_path, "w500") || ""}
+                alt={`${movie.title} poster`}
+                width={290}
                 height={428}
-                className="w-full h-full object-cover"
+                className="w-[290px] rounded-sm"
               />
+            ) : (
+              <div className="w-[290px] h-[428px] bg-gray-200 dark:bg-gray-800 rounded-sm flex items-center justify-center">
+                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                  No image
+                </p>
+              </div>
+            )}
+            <div className="relative w-full rounded-sm overflow-hidden">
+              {movie.backdrop_path ? (
+                <Image
+                  src={getBackdropUrl(movie.backdrop_path, "w500") || ""}
+                  alt={`${movie.title} backdrop`}
+                  width={500}
+                  height={428}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center">
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">
+                    No backdrop available
+                  </p>
+                </div>
+              )}
               {trailer && <TrailerPlayButton onClick={handleTrailerClick} />}
             </div>
           </div>

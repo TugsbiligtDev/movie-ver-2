@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react";
 import MovieCard from "./MovieCard";
 import MovieCardSkeleton from "../skeleton/MovieCardSkeleton";
+import SectionHeaderSkeleton from "../skeleton/SectionHeaderSkeleton";
 import { Button } from "../ui/button";
-import { Skeleton } from "../ui/skeleton";
 import { ChevronRight } from "lucide-react";
 import { Movie } from "@/lib/types";
 import Link from "next/link";
@@ -33,13 +33,7 @@ const MovieTopRated = () => {
   }, []);
 
   if (error) {
-    return (
-      <div>
-        <div className="w-full p-4 text-center text-red-500">
-          Error: {error}
-        </div>
-      </div>
-    );
+    return <div>{error}</div>;
   }
 
   return (
@@ -47,10 +41,7 @@ const MovieTopRated = () => {
       <div className="w-full mb-2">
         <div className="flex justify-between pb-2">
           {loading ? (
-            <>
-              <Skeleton className="h-8 w-32" />
-              <Skeleton className="h-8 w-24" />
-            </>
+            <SectionHeaderSkeleton />
           ) : (
             <>
               <p className="text-xl md:text-2xl font-semibold leading-8 text-gray-900 dark:text-white">

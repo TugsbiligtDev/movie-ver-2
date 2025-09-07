@@ -37,6 +37,10 @@ export interface TMDBResponse {
   total_results: number;
 }
 
+export interface GenreResponse {
+  genres: Genre[];
+}
+
 export interface SearchResult {
   id: number;
   title: string;
@@ -50,4 +54,16 @@ export type Theme = "light" | "dark";
 export interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
+}
+
+export interface Trailer {
+  key: string;
+  type: string;
+  site: string;
+}
+
+export interface HeroMovie extends Movie {
+  backdrop_path: string;
+  status: string;
+  trailer?: Trailer;
 }

@@ -105,17 +105,7 @@ export default async function TopRatedPage({
     );
   } catch (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Error Loading Movies
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            There was an error loading top rated movies:{" "}
-            {error instanceof Error ? error.message : "Unknown error"}
-          </p>
-        </div>
-      </div>
+      <div>{error instanceof Error ? error.message : "Unknown error"}</div>
     );
   }
 }

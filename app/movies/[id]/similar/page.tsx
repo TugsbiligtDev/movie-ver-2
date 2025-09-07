@@ -118,23 +118,7 @@ export default async function SimilarMoviesPage({
     );
   } catch (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Error Loading Similar Movies
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            There was an error loading similar movies:{" "}
-            {error instanceof Error ? error.message : "Unknown error"}
-          </p>
-          <Link
-            href={`/movies/${id}`}
-            className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
-          >
-            Return to Movie
-          </Link>
-        </div>
-      </div>
+      <div>{error instanceof Error ? error.message : "Unknown error"}</div>
     );
   }
 }

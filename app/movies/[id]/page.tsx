@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import {
   getMovieDetails,
   getMovieCredits,
@@ -25,6 +23,7 @@ async function MovieDetailContent({
 }) {
   try {
     const { id } = await params;
+
     const [movie, castdata, similardata, videos] = await Promise.all([
       getMovieDetails(id),
       getMovieCredits(id),
@@ -47,19 +46,9 @@ async function MovieDetailContent({
     );
   } catch (error) {
     return (
-      <section className="flex justify-center items-center min-h-[50vh]">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">
-            Error Loading Movie
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            {error instanceof Error ? error.message : "Something went wrong"}
-          </p>
-          <Link href="/">
-            <Button variant="outline">Return to Home</Button>
-          </Link>
-        </div>
-      </section>
+      <div>
+        {error instanceof Error ? error.message : "Something went wrong"}
+      </div>
     );
   }
 }

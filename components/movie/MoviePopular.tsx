@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import MovieCard from "./MovieCard";
 import MovieCardSkeleton from "../skeleton/MovieCardSkeleton";
+import SectionHeaderSkeleton from "../skeleton/SectionHeaderSkeleton";
 import { Button } from "../ui/button";
 import { ChevronRight } from "lucide-react";
 import { Movie } from "@/lib/types";
@@ -32,31 +33,31 @@ const MoviePopular = () => {
   }, []);
 
   if (error) {
-    return (
-      <div>
-        <div className="w-full p-4 text-center text-red-500">
-          Error: {error}
-        </div>
-      </div>
-    );
+    return <div>{error}</div>;
   }
 
   return (
     <div>
       <div className="w-full mb-2">
         <div className="flex justify-between pb-2">
-          <p className="text-xl md:text-2xl font-semibold leading-8 text-gray-900 dark:text-white">
-            Popular
-          </p>
-          <Link href="/popular">
-            <Button
-              variant="ghost"
-              className="flex items-center gap-2 text-[#09090B] dark:text-white"
-            >
-              See more
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          </Link>
+          {loading ? (
+            <SectionHeaderSkeleton />
+          ) : (
+            <>
+              <p className="text-xl md:text-2xl font-semibold leading-8 text-gray-900 dark:text-white">
+                Popular
+              </p>
+              <Link href="/popular">
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-2 text-[#09090B] dark:text-white"
+                >
+                  See more
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
       <div className="relative">

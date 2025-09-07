@@ -19,7 +19,6 @@ const SearchBox = () => {
     const searchMoviesData = async (query: string) => {
       setIsLoading(true);
       setError(null);
-
       try {
         const data = await searchMovies(query, 1);
         setResults(data.results?.slice(0, 5) || []);
@@ -39,7 +38,7 @@ const SearchBox = () => {
         setResults([]);
         setShowDropdown(false);
       }
-    }, 300);
+    }, 200);
 
     return () => clearTimeout(timeoutId);
   }, [search]);
@@ -59,8 +58,9 @@ const SearchBox = () => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (search.trim().length >= 2) {
-      router.push(`/search/${encodeURIComponent(search.trim())}`);
       setShowDropdown(false);
+      setSearch("");
+      router.push(`/search/${encodeURIComponent(search.trim())}`);
     }
   };
 
@@ -68,10 +68,6 @@ const SearchBox = () => {
     router.push(`/movies/${movie.id}`);
     setSearch("");
     setShowDropdown(false);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
   };
 
   return (
@@ -82,7 +78,7 @@ const SearchBox = () => {
           placeholder="Search movies..."
           className="pl-10"
           value={search}
-          onChange={handleInputChange}
+          onChange={(e) => setSearch(e.target.value)}
           onFocus={() => {
             if (results.length > 0) {
               setShowDropdown(true);
@@ -101,9 +97,7 @@ const SearchBox = () => {
               <Loader2 className="h-12 w-12 animate-spin text-gray-400" />
             </div>
           ) : error ? (
-            <div className="p-4 h-[300px] flex items-center justify-center">
-              <p className="text-red-500 text-center">{error}</p>
-            </div>
+            <div className="p-4">{error}</div>
           ) : results.length > 0 ? (
             <div>
               {results.map((movie) => (
@@ -153,18 +147,19 @@ const SearchBox = () => {
                 <button
                   onClick={() => {
                     router.push(`/search/${encodeURIComponent(search)}`);
+                    setSearch("");
                     setShowDropdown(false);
                   }}
                   className="w-full text-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
-                  See all results for &ldquo;{search}&rdquo;
+                  See all results for {search}
                 </button>
               </div>
             </div>
           ) : search.length >= 2 ? (
             <div className="p-4 h-[300px] flex items-center justify-center">
               <p className="text-gray-500 dark:text-gray-400 text-center">
-                No movies found for &ldquo;{search}&rdquo;
+                No movies found for {search}
               </p>
             </div>
           ) : null}

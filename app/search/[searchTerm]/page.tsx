@@ -31,13 +31,8 @@ export default async function SearchPage({
     );
   } catch (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6 text-red-600">
-          Error loading search results
-        </h1>
-        <p className="text-gray-600">
-          {error instanceof Error ? error.message : "Something went wrong"}
-        </p>
+      <div>
+        {error instanceof Error ? error.message : "Something went wrong"}
       </div>
     );
   }
